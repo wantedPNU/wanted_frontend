@@ -32,10 +32,12 @@
             .catch((error) => {
                 console.error('Error:', error);
             });
+        
         } else {
             alert("no file selected");
             console.error('No file selected.');
         }
+        
     }
 
     function handleAddQuery(){
