@@ -6,7 +6,7 @@
     let value = '';    
 
     let query = '';
-    let apiUrl="http://127.0.0.1:5000/file"; //backend port : 5000
+    let apiUrl="http://127.0.0.1:5000"; //backend port : 5000
 
     function getThreshold(){
         return 0.1;
@@ -19,7 +19,7 @@
             formData.append('damName', value);
             formData.append('dataFile', files[0]);
             
-            let url = `${apiUrl}/proc?&threshold=${getThreshold()}`;
+            let url = `${apiUrl}/proc?&threshold=${getThreshold()}`;            
 
             fetch(url, {
                 method: 'POST',
@@ -50,9 +50,24 @@
         
     }
 
+    async function handleStartSearch(){
+        console.log("search start");
+        let url = `${apiUrl}/inference`;
+        alert("added query!");
+        console.log("search start");
+        const req = new Request(url,{
+            method: "GET",           
+            mode:'no-cors' ,
+        });
+        const response = await fetch(req);
+
+        console.log(response.status);
+    }
+
     const strAsset = {
         uploadVideo: "동영상을 업로드하세요.",  
-        enterQuery:"실종자의 인상착의를 입력하세요"     
+        enterQuery:"실종자의 인상착의를 입력하세요",
+        startSearch:"실종자 찾기 시작"
     };
     
 
@@ -75,5 +90,13 @@
     <button
         class="query-input-button"        
         on:click={handleAddQuery}>
+    </button>    
+</div>
+
+<div class="start-search">    
+    <p>{strAsset.startSearch}</p>    
+    <button
+        class="start-search-button"        
+        on:click={handleStartSearch}>
     </button>    
 </div>
