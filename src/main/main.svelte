@@ -16,31 +16,6 @@
         return 0.1;
     }
 
-    let foo = 'baz'
-	let bar = 'qux'
-	let result = null
-	
-	async function doPost () {
-        let name 
-        let jsonsff = {
-            name : "hello"
-        }
-        console.log(typeof(JSON.stringify(jsonsff)))
-		const res = await fetch(apiUrl, {
-			method: 'POST',
-            headers: {
-                    "Content-Type": "application/json",
-            },
-			body: JSON.stringify({
-                name : "hello"
-            }), 
-            mode : 'no-cors',
-		})
-		
-		// const json = await res.json()
-		// result = JSON.stringify(json)
-	}
-
     function handleUpload() {
         if (files && files.length > 0) { 
             
@@ -69,21 +44,15 @@
         }
         
     }
-
+    
     async function handleAddQuery(queryString){               
-        let url = `${apiUrl}/query`;           
-        console.log(JSON.stringify(query));
-        console.log(typeof(queryString));
-        let jsonff = JSON.stringify(query);
-        console.log(typeof(jsonff));
-        const res = await fetch(apiUrl, {
+        let url = `${apiUrl}/query`;                               
+        const res = await fetch(url, {
 			method: 'POST',
             headers: {
                     "Content-Type": "application/json",
             },
-			body: JSON.stringify({
-                text : "hello"
-            }), 
+			body: queryString,
             mode : 'no-cors',
 		})  
     }
