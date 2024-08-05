@@ -1,14 +1,11 @@
 <script>
     import { onMount } from "svelte"; // 추후에 시작하자마자 실행해야할 함수를 추가해야한다면 사용할 예정
     import HeroBanner from "./heroBanner.svelte";
-
+    import downloadBlob from "../util/downloadBlob"
     let files;
     let value = '';    
 
-    let queryString = '';
-    let query = {
-            "text": "woman with blue shirt, man with white shirt",
-        };
+    let queryString = '';    
 
     let apiUrl="http://127.0.0.1:5000"; //backend port : 5000
 
@@ -59,16 +56,14 @@
 
     async function handleStartSearch(){
         console.log("search start");
-        let url = `${apiUrl}/inference`;
-        alert("added query!");
-        console.log("search start");
+        let url = `${apiUrl}/inference`;                
         const req = new Request(url,{
-            method: "GET",           
-            mode:'no-cors' ,
+            method: 'GET',                                        
         });
-        const response = await fetch(req);
-
-        console.log(response.status);
+        const response = await fetch(req)        
+        const blob = await response.blob();                
+        console.log(blob.type);        
+        downloadBlob(blob, "result");        
     }
 
     const strAsset = {
@@ -76,10 +71,6 @@
         enterQuery:"실종자의 인상착의를 입력하세요",
         startSearch:"실종자 찾기 시작"
     };
-
-    async function handleSubmit() {
-        await saveQueryToDB(queryString);
-    }
     
 
 </script>
