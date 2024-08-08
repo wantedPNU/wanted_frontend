@@ -14,18 +14,20 @@
     }
 
     function handleUpload() {
-        if (files && files.length > 0) { 
-            
+        
+        if (files && files.length > 0) {             
             const formData = new FormData(); //form data라는게 있길래 넣어봄.
-            formData.append('text', value);
-            formData.append('dataFile', files[0]);
+            formData.append('filename', "testfile");
+            formData.append('file', files[0]);
             
+                        
             // let url = `${apiUrl}/proc?&threshold=${getThreshold()}`;            
-            let url = `${apiUrl}/query`;
 
+            let url = `${apiUrl}/video/file`;              
+            
             fetch(url, {
-                method: 'POST',
-                body: formData
+                method: 'POST',                        
+                body:formData,
             })
             .then((response) => response.json())
             .then((result) => {
