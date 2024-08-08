@@ -15,16 +15,18 @@
     let resultFileUrl = ''; // 결과 파일 URL
 
     function handleUpload() {
-        if (files && files.length > 0) {
-            const formData = new FormData();
-            formData.append('text', value);
-            formData.append('dataFile', files[0]);
 
-            let url = `${apiUrl}/query`;
+        
+        if (files && files.length > 0) {             
+            const formData = new FormData(); //form data라는게 있길래 넣어봄.
+            formData.append('filename', "testfile");
+            formData.append('file', files[0]);                                                
 
+            let url = `${apiUrl}/video/file`;              
+            
             fetch(url, {
-                method: 'POST',
-                body: formData
+                method: 'POST',                        
+                body:formData,
             })
             .then((response) => response.json())
             .then((result) => {
