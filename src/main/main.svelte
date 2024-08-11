@@ -6,8 +6,8 @@
     let files;
     let value = '';
     let queryString = '';
-    let scoreThreshold = 0.1;
-    let frameInterval = 1;
+    let scoreThreshold = 0.02;
+    let frameInterval = 3;
     let apiUrl = "http://127.0.0.1:5000"; // Backend port: 5000
 
     let processing = false; // 상태 변수 추가
@@ -20,7 +20,7 @@
         if (files && files.length > 0) {             
             const formData = new FormData(); //form data라는게 있길래 넣어봄.
             formData.append('filename', "testfile");
-            formData.append('file', files[0]);                                                
+            formData.append('file', files[0]);                                            
 
             let url = `${apiUrl}/video/file`;              
             
@@ -58,7 +58,7 @@
         completed = false; // 완료 상태 초기화
 
         console.log("search start");
-        let url = `${apiUrl}/inference`;
+        let url = `${apiUrl}/inference?scoreThreshold=${scoreThreshold}&frameInterval=${frameInterval}`;
         const req = new Request(url, {
             method: 'GET',
         });
@@ -71,6 +71,7 @@
         processing = false; // 처리 중 상태 해제
         completed = true; // 완료 상태로 변경
     }
+    
 
     const strAsset = {
         uploadVideo: "동영상을 업로드하세요.",
@@ -90,13 +91,13 @@
 
     <div class="input-query">
         <p>{strAsset.enterQuery}</p>
-        <input id="queryInput" bind:value={queryString} placeholder="빨간 셔츠, 민 운동화" />
+        <input id="queryInput" bind:value={queryString} placeholder="빨간 셔츠, 흰 운동화" />
         <button on:click={() => handleAddQuery(queryString)}>추가</button>
     </div>
 
     <div class="controls">
         <label for="scoreThreshold">Score Threshold</label>
-        <input id="scoreThreshold" type="range" min="0" max="1" step="0.1" bind:value={scoreThreshold} />
+        <input id="scoreThreshold" type="range" min="0" max="1" step="0.002" bind:value={scoreThreshold} />
         <span>{scoreThreshold}</span>
 
         <label for="frameInterval">Frame Interval (seconds)</label>
