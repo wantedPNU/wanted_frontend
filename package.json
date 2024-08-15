@@ -7,14 +7,16 @@
     "mini-css-extract-plugin": "^2.6.0",
     "svelte": "^4.0.0",
     "svelte-loader": "^3.1.9",
-    "svelte-routing": "^1.6.0",
+    "svelte-routing": "^1.11.0",
+    "svelte-spa-router": "^4.0.1",
     "webpack": "^5.70.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
-    "dev": "webpack serve"
+    "dev": "webpack serve",
+    "go": "webpack serve && node server.js"
   },
   "dependencies": {
     "npm": "^10.8.2"
