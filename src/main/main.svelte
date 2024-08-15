@@ -1,11 +1,8 @@
-<script>
-    import { onMount } from "svelte";
-    import HeroBanner from "./heroBanner.svelte";
-    import downloadBlob from "../util/downloadBlob";    
+<script>    
+    import HeroBanner from "./heroBanner.svelte";      
 	import Tooltip from "./Tooltip.svelte"; // Tooltip 컴포넌트 가져오기
 
-    let files;
-    let value = '';
+    let files;    
     let queryString = '';
     let scoreThreshold = 0.02;
     let frameInterval = 3;
