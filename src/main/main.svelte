@@ -7,7 +7,7 @@
     let scoreThreshold = 0.02;
     let frameInterval = 3;
     let apiUrl = "http://127.0.0.1:5000"; // Backend port: 5000
-
+    let location = '';
     let processing = false; // 상태 변수 추가
     let completed = false; // 상태 변수 추가
     let isNotReadyForSearch = false;
@@ -37,6 +37,25 @@
             alert("선택된 파일이 없습니다.");
             console.error('No file selected.');
         }
+    }
+    async function handleAddLocation(location){
+        let url = `${apiUrl}/location`;
+        if(queryString.length > 0){
+            const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ location: location }),
+            mode: 'no-cors',
+            }).then((result) => {
+                alert("탐색할 지역을 설정했습니다.");                
+            });            
+        }else{
+            alert("지역이 비었습니다.");
+            console.error('No query added.');
+        }        
+
     }
 
     async function handleAddQuery(queryString) {
@@ -94,6 +113,11 @@
         <p>{strAsset.uploadVideo}</p>
         <input id="fileUpload" type="file" bind:files>
         <button on:click={handleUpload}>cctv영상 업로드</button>
+    </div>
+    <div class="missing person location">
+        <p>실종자가 있는 지역을 입력하세요</p>
+        <input id="locationUpload" bind:value={location}>
+        <!-- <button on:click={()=>handleAddLocation(location)}>실종자 지역 입력</button>         -->
     </div>
 
     <div class="input-query">
