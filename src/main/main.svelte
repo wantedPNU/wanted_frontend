@@ -1,8 +1,11 @@
 <script>    
     import HeroBanner from "./heroBanner.svelte";      
 	import Tooltip from "./Tooltip.svelte"; // Tooltip 컴포넌트 가져오기
+    
+    import { Progressbar } from 'flowbite-svelte';
 
     let files;    
+    let local;
     let queryString = '';
     let scoreThreshold = 0.02;
     let frameInterval = 3;
@@ -81,6 +84,7 @@
 
     const strAsset = {
         uploadVideo: "1. 실종자가 있다고 의심되는 cctv 영상을 업로드하세요.",
+        selectLocal:"1. 실종자가 발생한 지역을 선택하세요(개발중)",
         enterQuery: "2. 실종자의 인상착의를 입력하세요",
         controlParameter: "3. Threshold와 Frame Interval을 설정하세요",
         startSearch: "찾기"
@@ -90,12 +94,16 @@
 <HeroBanner />
 
 <div class="container">
-    <div class="upload-video">
+    <!-- <div class="upload-video">
         <p>{strAsset.uploadVideo}</p>
         <input id="fileUpload" type="file" bind:files>
         <button on:click={handleUpload}>cctv영상 업로드</button>
+    </div> -->
+    <div class="select-Local">
+        <p>{strAsset.selectLocal}</p>
+        <input id="fileUpload" bind:value={local}>
+        <button on:click={handleUpload}>지역 제출</button>
     </div>
-
     <div class="input-query">
         <p>{strAsset.enterQuery}</p>
         <input id="queryInput" bind:value={queryString} placeholder="빨간 셔츠, 흰 운동화" />
@@ -118,6 +126,7 @@
 
         {#if processing}
             <button disabled>처리 중...</button>
+            <Progressbar progress="50" />
         {:else if completed}
             <button on:click={handleStartSearch}>{strAsset.startSearch}</button>
             <p>탐색 완료!</p>
@@ -141,9 +150,9 @@
         padding: 20px;
     }
 
-    .upload-video{
+    /* .upload-video{
         margin-top: 100px
-    }
+    } */
     .input-query{
         margin-top: 100px
     }
@@ -180,7 +189,7 @@
         cursor: not-allowed;
     }
 
-    input[type="file"],
+    /* input[type="file"], */
     input[type="range"] {
         display: block;
         width: 100%;

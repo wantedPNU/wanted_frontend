@@ -4,6 +4,8 @@
   "devDependencies": {
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
+    "flowbite": "^2.5.1",
+    "flowbite-svelte": "^0.46.15",
     "mini-css-extract-plugin": "^2.6.0",
     "svelte": "^4.0.0",
     "svelte-loader": "^3.1.9",
