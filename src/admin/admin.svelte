@@ -1,5 +1,6 @@
 <script>
     let files;    
+    let apiUrl = "http://127.0.0.1:5000"; // Backend port: 5000
     
     function handleUpload() {        
         if (files && files.length > 0) {             
