@@ -16,32 +16,6 @@
     let isNotReadyForSearch = false;
     let resultFileUrl = ''; // 결과 파일 URL
 
-    function handleUpload() {        
-        if (files && files.length > 0) {             
-            const formData = new FormData(); //form data라는게 있길래 넣어봄.
-            formData.append('filename', "testfile");
-            formData.append('file', files[0]);                                            
-
-            let url = `${apiUrl}/video/file`;              
-            
-            fetch(url, {
-                method: 'POST',                        
-                body:formData,
-            })
-            .then((response) => response.json())
-            .then((result) => {
-                alert("탐색할 동영상이 업로드 되었습니다.");
-                console.log('Success:', result);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        } else {
-            alert("선택된 파일이 없습니다.");
-            console.error('No file selected.');
-        }
-    }
-
     async function handleAddQuery(queryString) {
         let url = `${apiUrl}/query`;
         if(queryString.length > 0){
@@ -101,8 +75,8 @@
     </div> -->
     <div class="select-Local">
         <p>{strAsset.selectLocal}</p>
-        <input id="fileUpload" bind:value={local}>
-        <button on:click={handleUpload}>지역 제출</button>
+        <input id="fileUpload" bind:value={local} on:click={alert("current not working")}>
+        <button >지역 제출(current not working)</button>
     </div>
     <div class="input-query">
         <p>{strAsset.enterQuery}</p>

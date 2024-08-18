@@ -1,5 +1,5 @@
 <script>	
-	import Main from './main/Main.svelte';
+	import Main from './main/main.svelte';
   	import Admin from './admin/admin.svelte';
   	
   	import Router from 'svelte-spa-router';
