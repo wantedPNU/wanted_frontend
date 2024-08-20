@@ -3,11 +3,10 @@
 	import Tooltip from "./Tooltip.svelte"; // Tooltip 컴포넌트 가져오기
     
     import { Progressbar } from 'flowbite-svelte';
-
-    let files;    
-    let local;
+ 
+    let location;
     let queryString = '';
-    let scoreThreshold = 0.02;
+    let scoreThreshold = 0.005;
     let frameInterval = 3;
     let apiUrl = "http://127.0.0.1:5000"; // Backend port: 5000
 
@@ -30,7 +29,7 @@
                 alert("탐색할 대상을 추가했습니다.");                
             });            
         }else{
-            alert("쿼리가 비었습니다.");
+            alert("인상착의가 비었습니다.");
             console.error('No query added.');
         }
         
@@ -68,15 +67,11 @@
 <HeroBanner />
 
 <div class="container">
-    <!-- <div class="upload-video">
-        <p>{strAsset.uploadVideo}</p>
-        <input id="fileUpload" type="file" bind:files>
-        <button on:click={handleUpload}>cctv영상 업로드</button>
-    </div> -->
+
     <div class="select-Local">
         <p>{strAsset.selectLocal}</p>
-        <input id="fileUpload" bind:value={local} on:click={alert("current not working")}>
-        <button >지역 제출(current not working)</button>
+        <input id="locationUpload" bind:value={location} placeholder="장전동" >
+        <button on:click={() => alert("current not working")}>지역 제출(current not working)</button>
     </div>
     <div class="input-query">
         <p>{strAsset.enterQuery}</p>
@@ -89,18 +84,19 @@
         <Tooltip title="Score Threshold는 YOLO 모델이 객체를 인식할 때, 해당 객체가 무엇인지 확신하는 정도를 결정하는 값입니다. 이 값이 높을수록 모델이 확신하는 경우에만 객체로 인식하며, 낮을수록 더 많은 객체를 인식하지만 그만큼 오탐지가 발생할 가능성도 높아집니다">
             <label for="scoreThreshold">Threshold 설정</label>
         </Tooltip>
-        <input id="scoreThreshold" type="range" min="0" max="1" step="0.002" bind:value={scoreThreshold} />
+        <input id="scoreThreshold" type="range" min="0.001" max="0.4" step="0.002" bind:value={scoreThreshold} />
         <span>{scoreThreshold}</span>
 
         <Tooltip title="Frame Interval은 YOLO 모델이 비디오를 분석할 때, 몇 프레임마다 객체 인식을 수행할지를 결정하는 값입니다. 이 값이 클수록 더 적은 프레임에서만 분석을 하여 처리 속도가 빨라지지만, 중요한 장면을 놓칠 가능성이 높아질 수 있습니다.">
             <label for="frameInterval">Frame Interval(초 단위)</label>
         </Tooltip>
-        <input id="frameInterval" type="range" min="1" max="5" step="1" bind:value={frameInterval} />
+        <input id="frameInterval" type="range" min="3" max="6" step="1" bind:value={frameInterval} />
         <span>{frameInterval}</span>
 
         {#if processing}
             <button disabled>처리 중...</button>
             <Progressbar progress="50" />
+            <p>안녕</p>
         {:else if completed}
             <button on:click={handleStartSearch}>{strAsset.startSearch}</button>
             <p>탐색 완료!</p>
@@ -123,17 +119,14 @@
         margin: 0 auto;
         padding: 20px;
     }
-
-    /* .upload-video{
-        margin-top: 100px
-    } */
+    
     .input-query{
         margin-top: 100px
     }
     .controls {
         margin-top: 100px;
         margin-bottom: 20px;
-    }    
+    }   
     .input-query input {
         width: 100%;
         padding: 10px;
@@ -165,6 +158,12 @@
 
     /* input[type="file"], */
     input[type="range"] {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+    }
+    /* input[type="file"], */
+    input[id="locationUpload"] {
         display: block;
         width: 100%;
         margin-top: 10px;
