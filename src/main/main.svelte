@@ -41,11 +41,11 @@
     // SSE 연결을 시작하는 함수
     async function startSSE() {
         const eventSource = new EventSource('http://127.0.0.1:5000/inference/progress');
-        
+        console.log("startSSE");
         eventSource.onmessage = function(event) {
             const data = event.data;
             numbers = [...numbers, data]; // 새로 받은 데이터를 numbers 배열에 추가            
-            // progressValue = data*3;            
+            progressValue = data*10;            
         };
 
         eventSource.onerror = function() {
@@ -69,6 +69,7 @@
         processing = true; // 처리 중 상태로 변경
         completed = false; // 완료 상태 초기화
 
+        startSSE();
         console.log("search start");
         let url = `${apiUrl}/inference?scoreThreshold=${scoreThreshold}&frameInterval=${frameInterval}`;
         const req = new Request(url, {
@@ -103,7 +104,7 @@
     <div id = "progressbar">        
         <ProgressBar series={progressValue} />
     </div>
-    <button on:click = {startSSE}>sse 호출</button>
+    <button on:click = {()=>startSSE()}>sse 호출</button>
 
     <h1>스트리밍 숫자</h1>
     <ul>
