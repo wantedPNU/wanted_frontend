@@ -95,8 +95,7 @@
 
         {#if processing}
             <button disabled>처리 중...</button>
-            <Progressbar progress="50" />
-            <p>안녕</p>
+            <Progressbar progress="50" />            
         {:else if completed}
             <button on:click={handleStartSearch}>{strAsset.startSearch}</button>
             <p>탐색 완료!</p>
