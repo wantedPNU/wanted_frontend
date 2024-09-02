@@ -3,6 +3,7 @@
 	import Tooltip from "./Tooltip.svelte"; // Tooltip 컴포넌트 가져오기
     
     import { Progressbar } from 'flowbite-svelte';
+    import { onMount } from 'svelte';
  
     let location;
     let queryString = '';
@@ -13,7 +14,25 @@
     let processing = false; // 상태 변수 추가
     let completed = false; // 상태 변수 추가
     let isNotReadyForSearch = false;
+    let descriptions = []; // Fetch한 데이터를 저장할 변수
     let resultFileUrl = ''; // 결과 파일 URL
+
+    onMount(async () => {
+        await loadMissingAlertMessage();
+    });
+
+    async function loadMissingAlertMessage() {
+        try {
+            const response = await fetch(`${apiUrl}/fetch-data`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            descriptions = await response.json();
+            console.log('Fetched data:', descriptions); // Fetched data log
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+        }
+    }
 
     async function handleAddQuery(queryString) {
         let url = `${apiUrl}/query`;
@@ -67,6 +86,32 @@
 <HeroBanner />
 
 <div class="container">
+    <!-- Fetched Data Display -->
+    <div class="descriptions">
+        <h2>최근 실종 문자 내역</h2>
+        {#if descriptions.length > 0}
+            <table>
+                <thead>
+                    <tr>
+                        <th>문자 발생 지역</th>
+                        <th>실종자 인상착의</th>
+                        <th>문자 발생 일자</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each descriptions as { region, description, creation_date }}
+                        <tr>
+                            <td>{region}</td>
+                            <td>{description.join(', ')}</td>
+                            <td>{creation_date}</td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        {:else}
+            <p>데이터가 없습니다.</p>
+        {/if}
+    </div>
 
     <div class="select-Local">
         <p>{strAsset.selectLocal}</p>
@@ -108,6 +153,7 @@
             <button id="searchStart" disbled='{isNotReadyForSearch}'on:click={handleStartSearch}>{strAsset.startSearch}</button>
         {/if}
     </div>
+
 </div>
 
 
@@ -193,5 +239,34 @@
 
     .result-download button:hover {
         background-color: #388e3c;
+    }
+
+    .descriptions {
+        margin-top: 50px;
+        padding: 10px;
+        background: #f4f4f4;
+        border-radius: 5px;
+    }
+
+    .descriptions h2 {
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid #ddd;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
     }
 </style>
