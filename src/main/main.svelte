@@ -45,7 +45,7 @@
         eventSource.onmessage = function(event) {
             const data = event.data;
             numbers = [...numbers, data]; // 새로 받은 데이터를 numbers 배열에 추가            
-            progressValue = data*10;            
+            progressValue = data*100;            
         };
 
         eventSource.onerror = function() {
