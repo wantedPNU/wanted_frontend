@@ -3,6 +3,9 @@
 	import Tooltip from "./Tooltip.svelte"; // Tooltip 컴포넌트 가져오기
     
     import { Progressbar } from 'flowbite-svelte';
+    import ProgressBar from '../general/ProgressBar.svelte';
+
+    let progressValue = 50;
     import { onMount } from 'svelte';
  
     let location;
@@ -10,7 +13,7 @@
     let scoreThreshold = 0.005;
     let frameInterval = 3;
     let apiUrl = "http://127.0.0.1:5000"; // Backend port: 5000
-
+    
     let processing = false; // 상태 변수 추가
     let completed = false; // 상태 변수 추가
     let isNotReadyForSearch = false;
@@ -53,11 +56,40 @@
         }
         
     }
+    let numbers = [];
+
+    // SSE 연결을 시작하는 함수
+    async function startSSE() {
+        const eventSource = new EventSource('http://127.0.0.1:5000/inference/progress');
+        console.log("startSSE");
+        eventSource.onmessage = function(event) {
+            const data = event.data;
+            numbers = [...numbers, data]; // 새로 받은 데이터를 numbers 배열에 추가            
+            progressValue = data*100;            
+        };
+
+        eventSource.onerror = function() {
+            console.error('SSE 연결 중 오류 발생.');
+            eventSource.close(); // 오류가 발생하면 연결을 종료
+        };
+    }
+
+    async function handleStartProgress(){
+        let url = `${apiUrl}/inference/progress`;
+        console.log("started");
+        const req = new Request(url,{
+            method: 'GET',
+        });
+        const response = await fetch(req);
+        console.log(response.data);
+        
+    }
 
     async function handleStartSearch() {
         processing = true; // 처리 중 상태로 변경
         completed = false; // 완료 상태 초기화
 
+        startSSE();
         console.log("search start");
         let url = `${apiUrl}/inference?scoreThreshold=${scoreThreshold}&frameInterval=${frameInterval}`;
         const req = new Request(url, {
@@ -81,11 +113,27 @@
         controlParameter: "3. Threshold와 Frame Interval을 설정하세요",
         startSearch: "찾기"
     };
+
+ 
+	
 </script>
 
 <HeroBanner />
 
 <div class="container">
+
+    <div id = "progressbar">        
+        <ProgressBar series={progressValue} />
+    </div>
+    <button on:click = {()=>startSSE()}>sse 호출</button>
+
+    <h1>스트리밍 숫자</h1>
+    <ul>
+        {#each numbers as number}
+            <li>{number}</li>
+
+        {/each}
+    </ul>
     <!-- Fetched Data Display -->
     <div class="descriptions">
         <h2>최근 실종 문자 내역</h2>
@@ -137,7 +185,8 @@
         </Tooltip>
         <input id="frameInterval" type="range" min="3" max="6" step="1" bind:value={frameInterval} />
         <span>{frameInterval}</span>
-
+        <Progressbar progress=50 size="h-1.5" />
+    
         {#if processing}
             <button disabled>처리 중...</button>
             <Progressbar progress="50" />            
