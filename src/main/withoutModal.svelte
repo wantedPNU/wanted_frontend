@@ -5,7 +5,7 @@
     import { onMount } from 'svelte';
 
     let queryString = '';
-    let scoreThreshold = 0.4;
+    let scoreThreshold = 0.5;
     let frameInterval = 5;
     let apiUrl = "http://127.0.0.1:5000"; 
 
@@ -19,7 +19,7 @@
     let sortBy = 'score';
 
     onMount(async () => {
-        loadMissingAlertMessage();
+        // loadMissingAlertMessage();
         // init();
     });
 //5초 10초 20초 30초 단위, threshold 삭제
@@ -139,33 +139,20 @@
         // Fallback in case filename doesn't match the expected format
         return [filename, 0, 0];
     }
-
-
+    
     const strAsset = {
         uploadVideo: "1. 실종자가 있다고 의심되는 cctv 영상을 업로드하세요.",
         enterQuery: "1. 실종자의 인상착의를 입력하세요",
-        controlParameter: "2. Frame Interval을 설정하세요",
+        controlParameter: "2. Threshold와 Frame Interval을 설정하세요",
         startSearch: "찾기"
     };
-    let showModal = true;
 
-    function openModal() {
-        showModal = true;
-    }
-
-    function closeModal() {
-        previewImages = [];
-        completed = false
-    }
-    
 </script>
 
 <HeroBanner />
-
-
-<div class="container {previewImages.length > 0 ? 'centered' : 'centered'}">
+<div class="container {previewImages.length > 0 ? 'shifted' : 'centered'}">
     
-    <div class="center-panel {previewImages.length > 0 ? 'center-panel-full' : 'center-panel-full'}" >
+    <div class="center-panel {previewImages.length > 0 ? 'center-panel-small' : 'center-panel-full'}" >
         {#if previewImages.length == 0}    
         <div class="descriptions">
             <h2>최근 실종 문자 내역</h2>
@@ -202,6 +189,9 @@
 
         <div class="controls">
             <p class="enterSetting">{strAsset.controlParameter}</p>
+            <label for="scoreThreshold">Threshold 설정</label>
+            <input id="scoreThreshold" type="range" min="0.1" max="1" step="0.05" bind:value={scoreThreshold} />
+            <span>{scoreThreshold}</span>
 
             <label for="frameInterval">Frame Interval(초 단위)</label>
             <input id="frameInterval" type="range" min="3" max="6" step="1" bind:value={frameInterval} />
@@ -217,70 +207,57 @@
         </div>
     </div>
 
-    {#if previewImages.length > 0}
-    <div class="modal-backdrop show">
-      <div class="modal-style show">        
-        <div class="image-preview">
-          <button class="close-button" on:click={closeModal}>×</button>
-          <p class="result-message">
-            <span class="highlight">{queryString}</span>에 대한 검색 결과입니다.
-          </p>
-          <div class="header-container">
-            <label class="radio-button">
-              <input 
-                type="radio" 
-                name="sort" 
-                value="score" 
-                checked={sortBy === 'score'}
-                on:change={() => { sortBy = 'score'; sortPreviewImages(); }}
-              />
-              <span class="custom-radio">정확도 순</span>
-            </label>
-            <label class="radio-button">
-              <input 
-                type="radio" 
-                name="sort" 
-                value="title" 
-                checked={sortBy === 'title'}
-                on:change={() => { sortBy = 'title'; sortPreviewImages(); }}
-              />
-              <span class="custom-radio">영상 제목 순</span>
-            </label>
-  
-            {#if completed}
-              <div class="result-download">
-                <a href={resultFileUrl} download="result.zip">
-                  <button>모든 결과 다운로드</button>
-                </a>
-              </div>
-            {/if}
-          </div>
-          <div class="preview-list">
-            {#each previewImages as image}
-              <div class="image-item">
-                <img src={image.url} alt="High probability frame" />
-                <div class="info-container">
-                    <a class="filename" href={image.url} target="_blank" rel="noopener noreferrer">{image.filename}</a>
-                    <p class="location">{image.location}</p>
-                  </div>
-                <div id="map" style="width:50px;height:40px;"></div>
-              </div>
-            {/each}
-          </div>
-        </div>
-      </div>
-    </div>
-    {:else if completed}
-        <div class="modal-backdrop show">
-            <div class="no-results-modal show">        
-                <div class="image-preview">
-                    <button class="close-button" on:click={closeModal}>×</button>
-                    <p class="no-results-message">검색 결과가 없습니다.</p>
-                </div>
+    {#if previewImages.length > 0 }        
+    <div class="right-panel">
+        <div class="image-preview">            
+            <div class="header-container">
+                <label class="radio-button">
+                    <input 
+                        type="radio" 
+                        name="sort" 
+                        value="score" 
+                        checked={sortBy === 'score'}
+                        on:change={() => { sortBy = 'score'; sortPreviewImages(); }}
+                    />
+                    <span class="custom-radio">정확도 순</span>
+                </label>
+                <label class="radio-button">
+                    <input 
+                        type="radio" 
+                        name="sort" 
+                        value="title" 
+                        checked={sortBy === 'title'}
+                        on:change={() => { sortBy = 'title'; sortPreviewImages(); }}
+                    />
+                    <span class="custom-radio">영상 제목 순</span>
+                </label>
+    
+                {#if completed}
+                    <div class="result-download">
+                        <a href={resultFileUrl} download="result.zip">
+                            <button>모든 결과 다운로드</button>
+                        </a>
+                    </div>
+                {/if}
+            </div>
+            <div class="preview-list">
+                {#each previewImages as image}
+                    <div class="image-item">
+                        <img src={image.url} alt="High probability frame" />
+                        <a class="filename" href={image.url} target="_blank" rel="noopener noreferrer"> {image.filename}</a> <br> {image.location}                                                
+                    </div>
+                    
+                {/each}
+                <!-- {#each locationImages as meta}
+                    <div class="image-item">
+                        <p>{meta.filename}</p>
+                        <p>{meta.location}</p>
+                    </div>
+                {/each} -->
             </div>
         </div>
+    </div>
     {/if}
-
 </div>
 
 <style>
@@ -307,9 +284,9 @@
         max-width: 1200px;
     }
 
-    /* .container.shifted {
+    .container.shifted {
         justify-content: space-between;
-    } */
+    }
 
     .center-panel {
         transition: width 0.3s ease;
@@ -323,10 +300,21 @@
         width: 70%;
     }
 
-    /* .center-panel-small {
+    .center-panel-small {
         width: 30%; 
-    } */
+    }
 
+    .right-panel {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        opacity: 1; 
+        padding: 20px;
+        background-color: var(--light-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
     .input-query {
         margin-top: 50px;
@@ -430,17 +418,24 @@
         font-size: 14px;
     }
 
+    .preview-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        width: 100%;
+    }
+
     .image-item {
         display: flex;
-        flex-direction: row;
+        flex-direction: row; /* 이미지를 제목과 같은 줄에 배치 */
         align-items: center;
-        justify-content: start;
-        width: 95%;
+        width: 100%;
         padding: 10px;
         background-color: #f9f9f9;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        gap: 10px;
+        gap: 10px; /* 이미지와 파일명 사이의 간격 */
     }
 
     .image-item img {
@@ -454,10 +449,10 @@
     }
 
     .header-container {
-        display: flex;
-        align-items: stretch;
-        justify-content: stretch;
-        margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
     }
 
 
@@ -479,137 +474,26 @@
     }
 
     .header-container label {
-        cursor: pointer;
+    margin-right: 10px;
+    cursor: pointer;
     }
 
     .header-container input[type="radio"] {
-        display: none;
+        display: none; /* 기본 라디오 버튼 숨기기 */
     }
 
     .header-container span {
         padding: 10px 20px;
         border-radius: 8px;
-        background-color: #e0e0e0;
+        background-color: #e0e0e0; /* 기본 회색 배경 */
         color: #333;
         transition: background-color 0.3s, color 0.3s;
     }
 
     .header-container input[type="radio"]:checked + span {
-        background-color: var(--primary-color); 
-        color: white; 
-    }
-    .modal-backdrop {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
+        background-color: var(--primary-color); /* 선택된 버튼 파란색 */
+        color: white; /* 선택된 버튼 글자색 흰색 */
     }
 
-    .modal-backdrop.show {
-        opacity: 1; 
-        pointer-events: all; 
-    }
-
-    .modal-style {
-        width: 65%;
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        opacity: 0; 
-        transform: translate(-50%, -60%); 
-        background-color: var(--light-color);
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        z-index: 10;
-        transition: opacity 0.3s ease, transform 0.3s ease; 
-        max-height: 80vh;
-        padding-left: 5%;
-        padding-right: 5%;
-    }
-    .modal-style.show {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-    }
-
-    .preview-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: stretch;
-        width: 100%;
-        max-height: 45vh;
-        padding-bottom: 15px;
-        overflow-y: auto; 
-    }
-
-    .close-button {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: none;
-        border: none;
-        font-size: 30px;
-        color: var(--primary-color);
-        cursor: pointer;
-        transition: color 0.3s ease;
-    }
-
-    .close-button:hover {
-        color: var(--secondary-color);
-    }  
-
-    .result-message {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: #000000;
-    }
-
-    .highlight {
-        color: blue;
-        font-weight: bold;
-        display: inline;
-    }
-
-    .location {
-        font-size: 14px;
-        color: rgb(85, 83, 83);
-    }
-
-    .info-container {
-        align-items: flex-start;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .no-results-modal {
-        width: 50%;
-        max-width: 600px;
-        background-color: var(--light-color);
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10;
-        transition: opacity 0.3s ease;
-        opacity: 0;
-    }
-
-    .no-results-modal.show {
-        opacity: 1; 
-    }
-
+   
 </style>
